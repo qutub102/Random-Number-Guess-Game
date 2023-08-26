@@ -11,22 +11,45 @@ import LinearGradient from "react-native-linear-gradient";
 import GameScreen from "./screens/GameScreen";
 
 import { Colors } from "./constants/colors";
+import GameOverScreen from "./screens/GameOverScreen";
 
 function App() {
   const [userNumber, setUserNumber] = useState(0);
+  const [gameIsOver, setGameIsOver] = useState(true);
+  const [guessRounds,setGuessRounds] = useState(0)
 
   function onPickNumberHandler(pickNumber) {
     setUserNumber(pickNumber);
+    setGameIsOver(false)
+  }
+
+  function gameOverHandler(numberOfRound) {
+    setGameIsOver(true);
+    setGuessRounds(numberOfRound)
+  }
+
+  function startNewGameHandler(){
+    setUserNumber(0)
+    setGuessRounds(0)
   }
 
   let screen = <StartGameScreen onPickNumber={onPickNumberHandler} />;
 
   if (userNumber) {
-    screen = <GameScreen />;
+    screen = (
+      <GameScreen userNumber={userNumber} onGameOver={gameOverHandler} />
+    );
+  }
+
+  if (gameIsOver && userNumber) {
+    screen = <GameOverScreen userNumber={userNumber} roundsNumber={guessRounds} onStartNewGame={startNewGameHandler} />;
   }
 
   return (
-    <LinearGradient colors={[Colors.primary700, Colors.accent500]} style={styles.rootScreen}>
+    <LinearGradient
+      colors={[Colors.primary700, Colors.accent500]}
+      style={styles.rootScreen}
+    >
       <ImageBackground
         source={require("./assets/images/background.png")}
         resizeMode="cover"
@@ -42,6 +65,7 @@ function App() {
 const styles = StyleSheet.create({
   rootScreen: {
     flex: 1,
+    // fontFamily: 'OpenSans-Bold'
   },
   backgroundImage: {
     opacity: 0.15,
